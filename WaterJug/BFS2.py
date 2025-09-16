@@ -54,7 +54,7 @@ def bfs_jugs(capA, capB, target):      # Define a function to solve the water ju
 
 # Example run for the classic case:
 if __name__ == "__main__":                     # Standard Python main entry point.
-    solution = bfs_jugs(5, 3, 4)               # Call BFS function with Jug A = 5L, Jug B = 3L, target = 4L.
+    solution = bfs_jugs(4, 3, 2)               # Call BFS function with Jug A = 5L, Jug B = 3L, target = 4L.
     if solution:                               # If a solution is found...
         print("Start -> (0, 0)")               # Print the starting state.
         for i, (act, state) in enumerate(solution, 1):  # Loop through the solution steps.
