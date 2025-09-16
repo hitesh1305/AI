@@ -1,9 +1,7 @@
 from kanren import Relation, facts, run, var
 
-# Define the relation
 bike = Relation()
 
-# Add facts: (bike_name, price)
 facts(bike,
       ('ktm', 200000),
       ('royal_enfield', 250000),
@@ -12,42 +10,29 @@ facts(bike,
       ('bajaj', 120000),
       ('tvs', 100000))
 
-# Query helper to get bike and price
 def get_all_bikes():
     x, p = var(), var()
     return run(0, (x, p), bike(x, p))
 
-# Comparison logic outside kanren
-def cheaper_than(bike_name):
-    # Get price of bike_name
-    all_bikes = get_all_bikes()
-    target_price = [p for (b, p) in all_bikes if b == bike_name]
-    if not target_price:
+def _compare_price(bike_name, comparison_logic):
+    price = var()
+    target_price_result = run(1, price, bike(bike_name, price))
+    if not target_price_result:
         return []
-    target_price = target_price[0]
+    target_price = target_price_result[0]
+    
+    all_bikes_list = get_all_bikes()
+    return [b for b, p in all_bikes_list if comparison_logic(p, target_price)]
 
-    # Return bikes with price < target
-    return [b for (b, p) in all_bikes if p < target_price]
+def cheaper_than(bike_name):
+    return _compare_price(bike_name, lambda p, target: p < target)
 
 def costlier_than(bike_name):
-    all_bikes = get_all_bikes()
-    target_price = [p for (b, p) in all_bikes if b == bike_name]
-    if not target_price:
-        return []
-    target_price = target_price[0]
-
-    return [b for (b, p) in all_bikes if p > target_price]
+    return _compare_price(bike_name, lambda p, target: p > target)
 
 def same_price(bike_name):
-    all_bikes = get_all_bikes()
-    target_price = [p for (b, p) in all_bikes if b == bike_name]
-    if not target_price:
-        return []
-    target_price = target_price[0]
+    return _compare_price(bike_name, lambda p, target: p == target)
 
-    return [b for (b, p) in all_bikes if p == target_price]
-
-# Usage
 print("Bikes cheaper than royal_enfield:", cheaper_than('royal_enfield'))
 print("Bikes costlier than tvs:", costlier_than('tvs'))
 print("Bikes with same price as hero:", same_price('hero'))
